@@ -1,0 +1,64 @@
+.data 
+	NewLine: .asciiz "\n"
+.text
+	main:
+		
+		addi $t0 , $zero , 1	# i = 1
+		loop:
+			bgt $t0 , 1000 ,exit
+			addi $t1 , $zero , 0	# sum = 0
+			addi $t2 , $t0 , 0	# temp = i
+			jal loop2
+			rem $t3 , $t1 , 3
+			rem $t5 , $t1 , 5
+			rem $t7 , $t1 , 7
+			
+			jal CheckAnswer
+			beq $v0 , 1 , print
+																																			
+			addi $t0 , $t0 , 1
+		j loop
+		
+		exit:
+			# End of programm
+			li $v0 , 10
+			syscall
+			
+		loop2:
+			ble $t2 , 0 , exit2
+			rem $t3 , $t2 , 10
+			add $t1 , $t1 , $t3
+			
+			div $t2 , $t2 , 10
+			j loop2
+		exit2:
+			jr $ra
+		
+		CheckAnswer:
+			CheckFive:
+				beq $t5 , 0 , CheckThree
+			Checkseven:
+				beq $t7 , 0 , CheckThree
+				bne $t7 , 0 , NoAnswer
+			CheckThree:
+				bne $t3 , 0 , IsAnswer
+				beq $t3 , 0 , NoAnswer
+			
+		IsAnswer:
+			li $v0 , 1
+			jr $ra
+		NoAnswer:
+			li $v0 , 0
+			jr $ra
+				
+			
+		print:
+			li $v0 , 1
+			addi $a0 , $t0 , 0
+			syscall
+			li $v0 , 4
+			la $a0 , NewLine
+			syscall
+			jr $ra
+			
+
